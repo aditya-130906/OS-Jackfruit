@@ -1,9 +1,8 @@
 obj-m += monitor.o
-ccflags-y := -Wno-unused-function -Wno-unused-variable
+ccflags-y := -Wno-unused-function -Wno-unused-variable -Wno-error=implicit-function-declaration
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
-
 WORKLOAD_LDFLAGS ?= -static
 
 USER_TARGETS := engine memory_hog cpu_hog io_pulse
