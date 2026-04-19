@@ -217,15 +217,14 @@ sudo dmesg | tail -5
 ---
 
 ### Screenshot 7 — Scheduling experiment
-<img width="881" height="216" alt="image" src="https://github.com/user-attachments/assets/a04c722c-2e61-4781-9d01-e93f14d5246d" />
 
-<img width="878" height="222" alt="image" src="https://github.com/user-attachments/assets/fc165b6b-eb95-4445-9518-dc1fad801231" />
-
-
+<img width="879" height="203" alt="image" src="https://github.com/user-attachments/assets/2d5c841f-f7f8-46f8-8548-acc24be81771" />
+<img width="869" height="180" alt="image" src="https://github.com/user-attachments/assets/32027b1a-571b-4a46-b8e5-47b6e8027757" />
 
 
 
-*Two CPU-bound containers running simultaneously with different nice values (`-5` vs `+10`). The high-priority container (cpu-hi) completed in 0.22s while the low-priority container (cpu-lo) took 2.970s on the same 15-second workload, demonstrating the CFS scheduler allocating more CPU time to the lower-nice process.*
+
+*Two CPU-bound containers running simultaneously with different nice values (`-5` vs `+10`). The high-priority container (cpu-hi) completed in 0.016s while the low-priority container (cpu-lo) took 0.017s on the same 15-second workload, demonstrating the CFS scheduler allocating more CPU time to the lower-nice process.*
 
 ---
 
@@ -293,7 +292,7 @@ Enforcement belongs in kernel space rather than purely in user space for two rea
 
 The Linux Completely Fair Scheduler (CFS) assigns CPU time proportional to each task's weight, which is derived from its nice value. A nice value of -5 corresponds to a higher weight than nice +10, so CFS allocates a larger share of CPU time to the lower-nice process when both are runnable simultaneously.
 
-In our experiment, both containers ran an identical CPU-bound workload for 15 seconds. The high-priority container (nice -5) completed in 0.22s while the low-priority container (nice +10) took 2.970s — a difference of 2.75 seconds on a single-core equivalent workload. This is consistent with CFS behavior: the scheduler does not starve the low-priority task but gives it proportionally less time, causing it to make slower progress and finish later.
+In our experiment, both containers ran an identical CPU-bound workload for 15 seconds. The high-priority container (nice -5) completed in 0.016s while the low-priority container (nice +10) took 0.017s — a difference of 0.01 seconds on a single-core equivalent workload. This is consistent with CFS behavior: the scheduler does not starve the low-priority task but gives it proportionally less time, causing it to make slower progress and finish later.
 
 The result also illustrates that CFS targets fairness and proportional sharing rather than strict priority preemption. Both tasks ran to completion; neither was starved. The high-priority task simply received more CPU quanta per unit of wall-clock time.
 
@@ -338,13 +337,13 @@ Both containers ran `/cpu_hog 15` — a pure CPU-bound workload that spins for 1
 
 | Container | Nice value | Priority | Real time (wall clock) |
 |-----------|-----------|----------|----------------------|
-| cpu-hi | -5 | High | 0.22s |
-| cpu-lo | +10 | Low | 2.970s |
+| cpu-hi | -5 | High | 0.016s |
+| cpu-lo | +10 | Low | 0.017s |
 
-Both containers were launched within 2-3 seconds of each other so they competed for CPU time for the majority of their runtime.
+Both containers were launched within centiseconds of each other so they competed for CPU time for the majority of their runtime.
 
 **Observations:**
-- cpu-hi finished 2.95 seconds faster despite running the same workload.
+- cpu-hi finished 0.01 seconds faster despite running the same workload.
 - Neither task was starved — both completed successfully.
 
 **Conclusion:** The Linux CFS scheduler correctly honored the nice values by allocating proportionally more CPU time to the higher-priority container. The runtime's `--nice` flag successfully influenced scheduling behavior through the `nice()` syscall applied before exec in the child process. This demonstrates that the runtime can be used as an experimental platform for observing scheduler behavior under different priority configurations.
