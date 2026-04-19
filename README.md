@@ -194,7 +194,8 @@ sudo dmesg | tail -5
 
 ### Screenshot 5 — Soft-limit warning
 
-<img width="1232" height="810" alt="image" src="https://github.com/user-attachments/assets/f1880ece-8e0f-43e2-b85c-36ab9ef1a8c5" />
+<img width="1002" height="158" alt="image" src="https://github.com/user-attachments/assets/7658a8f7-502c-48c7-bee0-a69564366466" />
+
 
 
 
